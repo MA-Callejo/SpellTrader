@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/launch">
+
+    <fragment
+        android:id="@+id/launch"
+        android:name="com.kiwistudio.spelltrader.UI.Launch"
+        android:label="fragment_launch"
+        tools:layout="@layout/fragment_launch" >
+        <action
+            android:id="@+id/action_launch_to_logIn"
+            app:destination="@id/logIn" />
+        <action
+            android:id="@+id/action_launch_to_main2"
+            app:destination="@id/main2" />
+    </fragment>
+    <fragment
+        android:id="@+id/logIn"
+        android:name="com.kiwistudio.spelltrader.UI.LogIn"
+        android:label="fragment_log_in"
+        tools:layout="@layout/fragment_log_in" >
+        <action
+            android:id="@+id/action_logIn_to_main2"
+            app:destination="@id/main2" />
+        <action
+            android:id="@+id/action_logIn_to_singIn"
+            app:destination="@id/singIn" />
+    </fragment>
+    <fragment
+        android:id="@+id/main2"
+        android:name="com.kiwistudio.spelltrader.UI.Main"
+        android:label="fragment_main"
+        tools:layout="@layout/fragment_main" />
+    <fragment
+        android:id="@+id/singIn"
+        android:name="com.kiwistudio.spelltrader.UI.SingIn"
+        android:label="fragment_sing_in"
+        tools:layout="@layout/fragment_sing_in" >
+        <action
+            android:id="@+id/action_singIn_to_logIn"
+            app:destination="@id/logIn" />
+    </fragment>
+</navigation>
