@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph_auth"
+    app:startDestination="@id/launch">
+
+    <fragment
+        android:id="@+id/launch"
+        android:name="com.kiwistudio.spelltrader.ui.auth.Launch"
+        android:label="fragment_launch"
+        tools:layout="@layout/fragment_launch" >
+        <action
+            android:id="@+id/action_launch_to_logIn"
+            app:destination="@id/logIn" />
+    </fragment>
+    <fragment
+        android:id="@+id/logIn"
+        android:name="com.kiwistudio.spelltrader.ui.auth.LogIn"
+        android:label="fragment_sing_in"
+        tools:layout="@layout/fragment_sing_in" >
+        <action
+            android:id="@+id/action_logIn_to_singIn2"
+            app:destination="@id/singIn2" />
+    </fragment>
+    <fragment
+        android:id="@+id/singIn2"
+        android:name="com.kiwistudio.spelltrader.ui.auth.SingIn"
+        android:label="SingIn" >
+        <action
+            android:id="@+id/action_singIn2_to_logIn"
+            app:destination="@id/logIn" />
+    </fragment>
+</navigation>

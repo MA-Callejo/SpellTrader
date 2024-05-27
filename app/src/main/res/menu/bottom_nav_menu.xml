@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/main2"
+        android:icon="@android:drawable/btn_star"
+        android:title="Inicio"/>
+    <item
+        android:id="@+id/wants"
+        android:icon="@android:drawable/btn_star"
+        android:title="Inicio"/>
+    <item
+        android:id="@+id/chats"
+        android:icon="@android:drawable/btn_star"
+        android:title="Inicio"/>
+    <item
+        android:id="@+id/catalogo"
+        android:icon="@android:drawable/btn_star"
+        android:title="Inicio"/>
+    <item
+        android:id="@+id/ajustes"
+        android:icon="@android:drawable/btn_star"
+        android:title="Inicio"/>
+</menu>

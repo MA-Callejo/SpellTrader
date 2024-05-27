@@ -1,11 +1,14 @@
-package com.kiwistudio.spelltrader.UI
+package com.kiwistudio.spelltrader.ui.main
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import androidx.lifecycle.ViewModelProvider
+import com.kiwistudio.spelltrader.Autentificacion
 import com.kiwistudio.spelltrader.MainViewModel
 import com.kiwistudio.spelltrader.R
 
@@ -24,6 +27,12 @@ class Main : Fragment() {
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel = ViewModelProvider(this)[MainViewModel::class.java]
+        viewModel = ViewModelProvider(requireActivity())[MainViewModel::class.java]
+        view.findViewById<Button>(R.id.logout).setOnClickListener{
+            viewModel.securePreferenceHelper.clearUserCredentials()
+            val intent = Intent(requireContext(), Autentificacion::class.java)
+            startActivity(intent)
+            activity?.finish()
+        }
     }
 }
