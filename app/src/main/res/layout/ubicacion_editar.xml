@@ -27,12 +27,6 @@
                 android:textAlignment="center"
                 android:text="Nombre"/>
             <ImageButton
-                android:id="@+id/btnEditarUbicacion"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:src="@android:drawable/ic_menu_edit"
-                android:background="@android:color/transparent"/>
-            <ImageButton
                 android:id="@+id/btnBorrarUbicacion"
                 android:layout_width="50dp"
                 android:layout_height="50dp"

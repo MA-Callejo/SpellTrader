@@ -9,5 +9,5 @@ data class Ubicacion(
     val altitud: Float? = null,
     val longitud: Float? = null,
     val numero: Int = 0,
-    val id: Int = 0,
+    var id: Int = 0,
     )

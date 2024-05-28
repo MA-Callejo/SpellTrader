@@ -37,6 +37,7 @@ class Launch : Fragment() {
             viewModel.logIn(username, password).observeForever{
                 if(it.code == 200){
                     viewModel.securePreferenceHelper.saveUserCredentials(username, password)
+                    viewModel.securePreferenceHelper.saveUserData(if (it.body?.has("id") == true) it.body.getInt("id") else 0, if (it.body?.has("token") == true) it.body.getString("token") else "")
                     val intent = Intent(requireContext(), MainActivity::class.java)
                     startActivity(intent)
                     activity?.finish()
