@@ -22,6 +22,8 @@ class SecurePreferenceHelper(context: Context) {
     companion object {
         private const val KEY_USERNAME = "username"
         private const val KEY_PASSWORD = "password"
+        private const val KEY_ID = "id"
+        private const val KEY_TOKEN = "token"
     }
 
     fun saveUserCredentials(username: String, password: String) {
@@ -31,11 +33,23 @@ class SecurePreferenceHelper(context: Context) {
             apply()
         }
     }
+    fun saveUserData(id: Int, token: String) {
+        with(sharedPreferences.edit()) {
+            putInt(KEY_ID, id)
+            putString(KEY_TOKEN, token)
+            apply()
+        }
+    }
 
     fun getUserCredentials(): Pair<String?, String?> {
         val username = sharedPreferences.getString(KEY_USERNAME, null)
         val password = sharedPreferences.getString(KEY_PASSWORD, null)
         return Pair(username, password)
+    }
+    fun getUserId(): Pair<Int, String?>{
+        val id = sharedPreferences.getInt(KEY_ID, 0)
+        val token = sharedPreferences.getString(KEY_TOKEN, null)
+        return Pair(id, token)
     }
 
     fun clearUserCredentials() {

@@ -18,6 +18,8 @@ import com.kiwistudio.spelltrader.R
 
 class LogIn : Fragment() {
     private lateinit var viewModel: LogInViewModel
+    private var user = ""
+    private var pass = ""
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -37,9 +39,12 @@ class LogIn : Fragment() {
             findNavController().navigate(R.id.action_logIn_to_singIn2)
         }
         view.findViewById<Button>(R.id.enter).setOnClickListener{
-            viewModel.logIn(view.findViewById<EditText>(R.id.email).text.toString(), view.findViewById<EditText>(R.id.password).text.toString()).observeForever{
+            user = view.findViewById<EditText>(R.id.email).text.toString()
+            pass = view.findViewById<EditText>(R.id.password).text.toString()
+            viewModel.logIn(user, pass).observeForever{
                 if(it.code == 200){
-                    viewModel.securePreferenceHelper.saveUserCredentials(view.findViewById<EditText>(R.id.email).text.toString(), view.findViewById<EditText>(R.id.password).text.toString())
+                    viewModel.securePreferenceHelper.saveUserCredentials(user, pass)
+                    viewModel.securePreferenceHelper.saveUserData(if (it.body?.has("id") == true) it.body.getInt("id") else 0, if (it.body?.has("token") == true) it.body.getString("token") else "")
                     val intent = Intent(requireContext(), MainActivity::class.java)
                     startActivity(intent)
                     activity?.finish()
