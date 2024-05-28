@@ -22,6 +22,7 @@ class MainViewModel: ViewModel() {
     private val BASE_URL = "https://kiwiprojectstudio.com/SpellDeal/"
     var token = ""
     var userId = 0
+    var notificaciones: MutableList<Boolean> = mutableListOf()
 
     fun init(context: Context) {
         Log.d("CONTEXT", "Iniciado")
@@ -30,6 +31,7 @@ class MainViewModel: ViewModel() {
         val credentials = securePreferenceHelper.getUserId()
         userId = credentials.first
         token = credentials.second.toString()
+        notificaciones = securePreferenceHelper.getNotificaciones()
     }
     fun getUbicaciones(user: Int): LiveData<Response> {
         val result = MutableLiveData<Response>()
@@ -71,12 +73,8 @@ class MainViewModel: ViewModel() {
         val result = MutableLiveData<Response>()
         val jsonBody = JSONObject().apply {
             put("nombre", ubicacion.nombre)
-            put("calle", ubicacion.calle)
+            put("altitud", ubicacion.altitud)
             put("longitud", ubicacion.longitud)
-            put("numero", ubicacion.numero)
-            put("poblacion", ubicacion.poblacion)
-            put("provincia", ubicacion.provincia)
-            put("cp", ubicacion.cp)
         }
         val queue: RequestQueue = Volley.newRequestQueue(context)
         val url = BASE_URL + "updateUbicacion.php?id="+ubicacion.id+"&token=" + token
@@ -100,11 +98,8 @@ class MainViewModel: ViewModel() {
         val result = MutableLiveData<Response>()
         val jsonBody = JSONObject().apply {
             put("nombre", ubicacion.nombre)
-            put("calle", ubicacion.calle)
-            put("numero", ubicacion.numero)
-            put("poblacion", ubicacion.poblacion)
-            put("provincia", ubicacion.provincia)
-            put("cp", ubicacion.cp)
+            put("altitud", ubicacion.altitud)
+            put("longitud", ubicacion.longitud)
         }
         val queue: RequestQueue = Volley.newRequestQueue(context)
         val url = BASE_URL + "createUbicacion.php?token=" + token
@@ -116,7 +111,7 @@ class MainViewModel: ViewModel() {
                     val msg = if(response.has("msg")) response.getString("msg") else null
                     val body = if(response.has("body")) response.getJSONObject("body") else null
                     result.value = Response(code, msg, body)
-                    Log.d("EXIT", msg+"")
+                    Log.d("EXIT", msg+"/"+jsonBody.toString())
                 }
             },
             { error -> error.message?.let { Log.d("ERROR", it+jsonBody.toString()+" at "+url) } })

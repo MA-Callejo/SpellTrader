@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph_settings"
+    app:startDestination="@id/ajustes2">
+
+    <fragment
+        android:id="@+id/ajustes2"
+        android:name="com.kiwistudio.spelltrader.ui.settings.Ajustes"
+        android:label="fragment_ajustes"
+        tools:layout="@layout/fragment_ajustes" >
+        <action
+            android:id="@+id/action_ajustes2_to_notificaciones2"
+            app:destination="@id/notificaciones2" />
+        <action
+            android:id="@+id/action_ajustes2_to_historial2"
+            app:destination="@id/historial2" />
+        <action
+            android:id="@+id/action_ajustes2_to_importar2"
+            app:destination="@id/importar2" />
+        <action
+            android:id="@+id/action_ajustes2_to_perfil2"
+            app:destination="@id/perfil2" />
+        <action
+            android:id="@+id/action_ajustes2_to_ubicaciones2"
+            app:destination="@id/ubicaciones2" />
+    </fragment>
+    <fragment
+        android:id="@+id/notificaciones2"
+        android:name="com.kiwistudio.spelltrader.ui.settings.Notificaciones"
+        android:label="fragment_notificaciones"
+        tools:layout="@layout/fragment_notificaciones" />
+    <fragment
+        android:id="@+id/historial2"
+        android:name="com.kiwistudio.spelltrader.ui.settings.Historial"
+        android:label="fragment_historial"
+        tools:layout="@layout/fragment_historial" />
+    <fragment
+        android:id="@+id/importar2"
+        android:name="com.kiwistudio.spelltrader.ui.settings.Importar"
+        android:label="fragment_importar"
+        tools:layout="@layout/fragment_importar" />
+    <fragment
+        android:id="@+id/perfil2"
+        android:name="com.kiwistudio.spelltrader.ui.settings.Perfil"
+        android:label="fragment_perfil"
+        tools:layout="@layout/fragment_perfil" />
+    <fragment
+        android:id="@+id/ubicaciones2"
+        android:name="com.kiwistudio.spelltrader.ui.settings.Ubicaciones"
+        android:label="fragment_ubicaciones"
+        tools:layout="@layout/fragment_ubicaciones" />
+</navigation>

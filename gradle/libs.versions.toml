@@ -20,6 +20,7 @@ securityCryptoKtx = "1.0.0"
 volley = "1.2.1"
 playServicesMaps = "18.2.0"
 preferenceKtx = "1.2.1"
+playServicesLocation = "21.2.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -44,6 +45,7 @@ retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit
 volley = { group = "com.android.volley", name = "volley", version.ref = "volley" }
 play-services-maps = { group = "com.google.android.gms", name = "play-services-maps", version.ref = "playServicesMaps" }
 androidx-preference-ktx = { group = "androidx.preference", name = "preference-ktx", version.ref = "preferenceKtx" }
+play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

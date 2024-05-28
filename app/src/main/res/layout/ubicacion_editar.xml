@@ -37,13 +37,7 @@
             android:id="@+id/calle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="DIRECCION"/>
-        <TextView
-            android:id="@+id/poblacion"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="DIRECCION"/>
+            android:textAlignment="center"
+            android:text="Nombre"/>
     </LinearLayout>
 </androidx.cardview.widget.CardView>

@@ -2,6 +2,8 @@ package com.kiwistudio.spelltrader.ui.settings
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
+import android.content.Context
+import android.location.Geocoder
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -11,6 +13,7 @@ import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -18,6 +21,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.kiwistudio.spelltrader.MainViewModel
 import com.kiwistudio.spelltrader.R
 import com.kiwistudio.spelltrader.entities.Ubicacion
+import java.util.Locale
 
 class Ubicaciones : Fragment() {
     private lateinit var viewModel: MainViewModel
@@ -56,12 +60,9 @@ class Ubicaciones : Fragment() {
                 for (i in 0 until ubicacionesResponse.length()) {
                     datas.add(Ubicacion(
                         nombre = ubicacionesResponse.getJSONObject(i).getString("nombre"),
-                        calle = ubicacionesResponse.getJSONObject(i).getString("calle"),
-                        poblacion = ubicacionesResponse.getJSONObject(i).getString("poblacion"),
-                        cp = ubicacionesResponse.getJSONObject(i).getString("cp"),
-                        numero = ubicacionesResponse.getJSONObject(i).getInt("numero"),
                         id = ubicacionesResponse.getJSONObject(i).getInt("id"),
-                        provincia = ubicacionesResponse.getJSONObject(i).getInt("provincia")
+                        altitud = ubicacionesResponse.getJSONObject(i).getDouble("altitud"),
+                        longitud = ubicacionesResponse.getJSONObject(i).getDouble("longitud")
                     ))
                 }
             }
@@ -95,9 +96,10 @@ class Ubicaciones : Fragment() {
     }
     class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val title: TextView = itemView.findViewById(R.id.nombreUbicacion)
-        val calle: TextView = itemView.findViewById(R.id.calle)
-        val poblacion: TextView = itemView.findViewById(R.id.poblacion)
         val borrar: ImageButton = itemView.findViewById(R.id.btnBorrarUbicacion)
+        val calle: TextView = itemView.findViewById(R.id.calle)
+        val context: Context
+            get() = itemView.context
     }
     class UbicacionAdapter(private val dataList: List<Ubicacion>,
                            private val onCardClick: (Ubicacion) -> Unit,
@@ -108,9 +110,22 @@ class Ubicaciones : Fragment() {
         }
         override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
             val data = dataList[position]
+
+            val geocoder = Geocoder(holder.context, Locale.getDefault())
+            val addresses = data.altitud?.let { data.longitud?.let { it1 ->
+                geocoder.getFromLocation(it,
+                    it1, 1)
+            } }
+            if (addresses != null) {
+                if (addresses.isNotEmpty()) {
+                    val address = addresses[0]
+                    val addressText = address.getAddressLine(0)
+                    holder.calle.text = addressText
+                } else {
+                    holder.calle.text = "Address not found"
+                }
+            }
             holder.title.text = data.nombre
-            holder.calle.text = "${data.calle}, Nº${data.numero}"
-            holder.poblacion.text = "${data.poblacion} (${data.cp}), ${data.provincia}"
             holder.itemView.setOnClickListener {
                 onCardClick(data)
             }

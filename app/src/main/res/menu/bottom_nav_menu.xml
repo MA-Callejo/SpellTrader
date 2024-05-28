@@ -18,7 +18,7 @@
         android:icon="@android:drawable/btn_star"
         android:title="Catalogo"/>
     <item
-        android:id="@+id/ajustes"
+        android:id="@+id/mainSettings"
         android:icon="@android:drawable/btn_star"
         android:title="Ajustes"/>
 </menu>

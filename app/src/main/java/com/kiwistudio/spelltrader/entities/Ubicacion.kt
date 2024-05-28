@@ -6,8 +6,8 @@ data class Ubicacion(
     val provincia: Int = 0,
     val poblacion: String = "",
     val cp: String = "",
-    val altitud: Float? = null,
-    val longitud: Float? = null,
+    val altitud: Double? = null,
+    val longitud: Double? = null,
     val numero: Int = 0,
     var id: Int = 0,
     )

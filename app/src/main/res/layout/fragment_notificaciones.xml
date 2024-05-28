@@ -1,14 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.settings.Notificaciones">
-
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
+    tools:context=".ui.settings.Notificaciones"
+    android:orientation="vertical"
+    android:gravity="center">
+    <Switch
+        android:id="@+id/mensajes"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
-
-</FrameLayout>
+        android:layout_weight="1"
+        android:text="Mensajes" />
+    <Switch
+        android:id="@+id/picos"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:text="Picos de precio" />
+    <Switch
+        android:id="@+id/ofertas"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:text="Anuncios wants" />
+    <Switch
+        android:id="@+id/caducidad"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:text="Caducidad de ofertas" />
+    <Switch
+        android:id="@+id/valoraciones"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:text="Valoraciones" />
+</LinearLayout>

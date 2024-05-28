@@ -24,6 +24,27 @@ class SecurePreferenceHelper(context: Context) {
         private const val KEY_PASSWORD = "password"
         private const val KEY_ID = "id"
         private const val KEY_TOKEN = "token"
+        private const val NOTIFY_MENSAJES = "mensajes"
+        private const val NOTIFY_PICOS = "picos"
+        private const val NOTIFY_OFERTAS = "ofertas"
+        private const val NOTIFY_CADUCIDAD = "caducidad"
+        private const val NOTIFY_VALORACIONES = "valoraciones"
+    }
+
+    fun savePrefernece(key: String, valor: Boolean){
+        with(sharedPreferences.edit()) {
+            putBoolean(key, valor)
+            apply()
+        }
+    }
+    fun getNotificaciones(): MutableList<Boolean> {
+        val notificaciones = mutableListOf(false, false, false, false, false)
+        notificaciones[0] = sharedPreferences.getBoolean(NOTIFY_MENSAJES, false)
+        notificaciones[1] = sharedPreferences.getBoolean(NOTIFY_PICOS, false)
+        notificaciones[2] = sharedPreferences.getBoolean(NOTIFY_OFERTAS, false)
+        notificaciones[3] = sharedPreferences.getBoolean(NOTIFY_CADUCIDAD, false)
+        notificaciones[4] = sharedPreferences.getBoolean(NOTIFY_VALORACIONES, false)
+        return notificaciones
     }
 
     fun saveUserCredentials(username: String, password: String) {
