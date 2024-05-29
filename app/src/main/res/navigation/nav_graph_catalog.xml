@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph_catalog"
+    app:startDestination="@id/catalogo">
+
+    <fragment
+        android:id="@+id/catalogo"
+        android:name="com.kiwistudio.spelltrader.ui.catalogo.Catalogo"
+        android:label="fragment_catalogo"
+        tools:layout="@layout/fragment_catalogo" />
+</navigation>

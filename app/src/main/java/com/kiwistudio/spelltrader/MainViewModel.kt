@@ -12,6 +12,7 @@ import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
 import com.kiwistudio.spelltrader.conexion.Repository
 import com.kiwistudio.spelltrader.conexion.Response
+import com.kiwistudio.spelltrader.entities.Anuncio
 import com.kiwistudio.spelltrader.entities.Ubicacion
 import kotlinx.coroutines.launch
 import org.json.JSONObject
@@ -33,12 +34,11 @@ class MainViewModel: ViewModel() {
         token = credentials.second.toString()
         notificaciones = securePreferenceHelper.getNotificaciones()
     }
-    fun getUbicaciones(user: Int): LiveData<Response> {
+    fun connexionKiwi(url: String, body: JSONObject?): LiveData<Response>{
         val result = MutableLiveData<Response>()
         val queue: RequestQueue = Volley.newRequestQueue(context)
-        val url = BASE_URL + "getUbicaciones.php?user=" + user + "&token=" + token
         val jsonObjectRequest = JsonObjectRequest(
-            com.android.volley.Request.Method.GET, url, null,
+            com.android.volley.Request.Method.GET, BASE_URL + url, body,
             { response ->
                 if (response != null) {
                     val code = if(response.has("code")) response.getInt("code") else 599
@@ -49,73 +49,64 @@ class MainViewModel: ViewModel() {
             },
             { error -> error.message?.let { Log.d("ERROR", it) } })
         queue.add(jsonObjectRequest)
+        return result
+    }
+    fun getMisAnuncios(): LiveData<Response> {
+        val url = "getMisAnuncios.php?token=" + token
+        val result = connexionKiwi(url, null)
+        return result
+    }
+    fun deleteAnuncios(id: Int): LiveData<Response>{
+        val url = "deleteAnuncios.php?id=" + id + "&token=" + token
+        val result = connexionKiwi(url, null)
+        return result
+    }
+    fun updateAnuncios(anuncio: Anuncio): LiveData<Response>{
+        val jsonBody = JSONObject().apply {
+            put("nombre", anuncio.nombre)
+            put("descripcion", anuncio.descripcion)
+        }
+        val url = "updateAnuncios.php?id="+anuncio.id+"&token=" + token
+        val result = connexionKiwi(url, jsonBody)
+        return result
+    }
+    fun createAnuncio(anuncio: Anuncio): LiveData<Response>{
+        val jsonBody = JSONObject().apply {
+            put("nombre", anuncio.nombre)
+            put("descripcion", anuncio.descripcion)
+        }
+        val url = "createAnuncio.php?token=" + token
+        val result = connexionKiwi(url, jsonBody)
+        return result
+    }
+    fun getUbicaciones(user: Int): LiveData<Response> {
+        val url = "getUbicaciones.php?user=" + user + "&token=" + token
+        val result = connexionKiwi(url, null)
         return result
     }
     fun deleteUbicacion(id: Int): LiveData<Response>{
-        val result = MutableLiveData<Response>()
-        val queue: RequestQueue = Volley.newRequestQueue(context)
-        val url = BASE_URL + "deleteUbicaciones.php?id=" + id + "&token=" + token
-        val jsonObjectRequest = JsonObjectRequest(
-            com.android.volley.Request.Method.GET, url, null,
-            { response ->
-                if (response != null) {
-                    val code = if(response.has("code")) response.getInt("code") else 599
-                    val msg = if(response.has("msg")) response.getString("msg") else null
-                    val body = if(response.has("body")) response.getJSONObject("body") else null
-                    result.value = Response(code, msg, body)
-                }
-            },
-            { error -> error.message?.let { Log.d("ERROR", it) } })
-        queue.add(jsonObjectRequest)
+        val url = "deleteUbicaciones.php?id=" + id + "&token=" + token
+        val result = connexionKiwi(url, null)
         return result
     }
     fun updateUbicacion(ubicacion: Ubicacion): LiveData<Response>{
-        val result = MutableLiveData<Response>()
         val jsonBody = JSONObject().apply {
             put("nombre", ubicacion.nombre)
             put("altitud", ubicacion.altitud)
             put("longitud", ubicacion.longitud)
         }
-        val queue: RequestQueue = Volley.newRequestQueue(context)
-        val url = BASE_URL + "updateUbicacion.php?id="+ubicacion.id+"&token=" + token
-        val jsonObjectRequest = JsonObjectRequest(
-            com.android.volley.Request.Method.POST, url, jsonBody,
-            { response ->
-                if (response != null) {
-                    val code = if(response.has("code")) response.getInt("code") else 599
-                    val msg = if(response.has("msg")) response.getString("msg") else null
-                    val body = if(response.has("body")) response.getJSONObject("body") else null
-                    result.value = Response(code, msg, body)
-                    Log.d("EXIT", jsonBody.toString()+" at "+url)
-                }
-            },
-            { error -> error.message?.let { Log.d("ERROR", it+jsonBody.toString()+" at "+url) } })
-        queue.add(jsonObjectRequest)
+        val url = "updateUbicacion.php?id="+ubicacion.id+"&token=" + token
+        val result = connexionKiwi(url, jsonBody)
         return result
     }
-
     fun createUbicacion(ubicacion: Ubicacion): LiveData<Response>{
-        val result = MutableLiveData<Response>()
         val jsonBody = JSONObject().apply {
             put("nombre", ubicacion.nombre)
             put("altitud", ubicacion.altitud)
             put("longitud", ubicacion.longitud)
         }
-        val queue: RequestQueue = Volley.newRequestQueue(context)
-        val url = BASE_URL + "createUbicacion.php?token=" + token
-        val jsonObjectRequest = JsonObjectRequest(
-            com.android.volley.Request.Method.POST, url, jsonBody,
-            { response ->
-                if (response != null) {
-                    val code = if(response.has("code")) response.getInt("code") else 599
-                    val msg = if(response.has("msg")) response.getString("msg") else null
-                    val body = if(response.has("body")) response.getJSONObject("body") else null
-                    result.value = Response(code, msg, body)
-                    Log.d("EXIT", msg+"/"+jsonBody.toString())
-                }
-            },
-            { error -> error.message?.let { Log.d("ERROR", it+jsonBody.toString()+" at "+url) } })
-        queue.add(jsonObjectRequest)
+        val url = "createUbicacion.php?token=" + token
+        val result = connexionKiwi(url, jsonBody)
         return result
     }
 }

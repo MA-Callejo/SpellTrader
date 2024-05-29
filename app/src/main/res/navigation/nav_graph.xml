@@ -21,10 +21,10 @@
         android:label="fragment_chats"
         tools:layout="@layout/fragment_chats" />
     <fragment
-        android:id="@+id/catalogo"
-        android:name="com.kiwistudio.spelltrader.ui.main.Catalogo"
-        android:label="fragment_catalogo"
-        tools:layout="@layout/fragment_catalogo" />
+        android:id="@+id/catalogoMain"
+        android:name="com.kiwistudio.spelltrader.ui.main.CatalogoMain"
+        android:label="fragment_catalogo_main"
+        tools:layout="@layout/fragment_catalogo_main" />
     <fragment
         android:id="@+id/mainSettings"
         android:name="com.kiwistudio.spelltrader.ui.main.MainSettings"

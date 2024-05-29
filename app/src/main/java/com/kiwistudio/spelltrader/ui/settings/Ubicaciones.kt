@@ -80,8 +80,8 @@ class Ubicaciones : Fragment() {
                     builder.setTitle("Confirmacion")
                     builder.setMessage("¿Esta seguro de que desea eliminar esta ubicacion?")
                     builder.setPositiveButton("Si"){ _, _: Int ->
-                        viewModel.deleteUbicacion(data.id).observeForever{_ ->
-                            if(it != null){
+                        viewModel.deleteUbicacion(data.id).observeForever{res ->
+                            if(res != null){
                                 recargar(view)
                             }
                         }
