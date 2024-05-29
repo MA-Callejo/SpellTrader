@@ -2,6 +2,14 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="grey">#5C5C5C</color>
     <color name="inactive">#3D5830</color>
     <color name="active">#2EC312</color>
+    <color name="mint">#28FF00</color>
+    <color name="nearMint">#5AB349</color>
+    <color name="excellent">#3F7834</color>
+    <color name="good">#C3AB12</color>
+    <color name="lightplayed">#CC8751</color>
+    <color name="played">#C35912</color>
+    <color name="poor">#DA4141</color>
 </resources>

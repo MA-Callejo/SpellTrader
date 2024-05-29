@@ -11,11 +11,13 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.transition.Visibility
 import com.kiwistudio.spelltrader.MainViewModel
 import com.kiwistudio.spelltrader.R
 import com.kiwistudio.spelltrader.entities.Anuncio
@@ -97,7 +99,7 @@ class Catalogo : Fragment() {
                     ))
                 }
             }
-            val adapter = AnuncioAdapter(datas,
+            val adapter = AnuncioAdapter(datas, viewModel,
                 onCardClick = { data ->
                     // Código a ejecutar cuando se pulse el CardView
                     val dialog = DialogMiAnuncio(data)
@@ -129,10 +131,17 @@ class Catalogo : Fragment() {
         val title: TextView = itemView.findViewById(R.id.nombre)
         val borrar: ImageButton = itemView.findViewById(R.id.btnBorrar)
         val descripcion: TextView = itemView.findViewById(R.id.descripcion)
+        val precio: TextView = itemView.findViewById(R.id.precio)
+        val edicion: TextView = itemView.findViewById(R.id.edicion)
+        val imagen: ImageView = itemView.findViewById(R.id.imagen)
+        val idioma: ImageView = itemView.findViewById(R.id.idioma)
+        val graded: ImageView = itemView.findViewById(R.id.graded)
+        val foil: ImageView = itemView.findViewById(R.id.foil)
         val context: Context
             get() = itemView.context
     }
     class AnuncioAdapter(private val dataList: List<Anuncio>,
+                           private val viewModel: MainViewModel,
                            private val onCardClick: (Anuncio) -> Unit,
                            private val onDelete: (Anuncio) -> Unit) : RecyclerView.Adapter<MyViewHolder>() {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
@@ -141,8 +150,47 @@ class Catalogo : Fragment() {
         }
         override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
             val data = dataList[position]
-            holder.title.text = data.nombre
-            holder.descripcion.text = data.descripcion
+            viewModel.getCard(data.carta).observeForever{
+                holder.title.text = it.getString("name")
+                holder.edicion.text = it.getString("set_name")
+                var precio = 0.0
+                if(data.modoPrecio == 1){
+                    precio = data.precio
+                }else {
+                    val precios = it.getJSONObject("prices")
+                    var precioBase =
+                        (if (data.foil) precios.getString("eur_foil") else precios.getString("eur")).toDouble()
+                    precio = precioBase*(1+(data.porcentaje/100)) + data.comision
+                }
+                holder.precio.text = String.format("%.2f", precio)+"€"
+                var uri = it.getJSONObject("image_uris").getString("art_crop")
+            }
+            holder.itemView.setBackgroundColor(
+                when(data.estado){
+                    1 -> R.color.mint
+                    2 -> R.color.nearMint
+                    3 -> R.color.excellent
+                    4 -> R.color.good
+                    5 -> R.color.lightplayed
+                    6 -> R.color.played
+                    7 -> R.color.poor
+                    else -> R.color.grey
+                })
+            holder.idioma.setImageResource(
+                when(data.idioma){
+                    1 -> R.drawable.ingles
+                    2 -> R.drawable.espana
+                    3 -> R.drawable.portugal
+                    4 -> R.drawable.francia
+                    5 -> R.drawable.italia
+                    6 -> R.drawable.china
+                    7 -> R.drawable.japon
+                    8 -> R.drawable.corea
+                    9 -> R.drawable.rusia
+                    else -> R.drawable.ingles
+                }
+            )
+            holder.foil.visibility = if(data.foil) View.VISIBLE else View.GONE
             holder.itemView.setOnClickListener {
                 onCardClick(data)
             }

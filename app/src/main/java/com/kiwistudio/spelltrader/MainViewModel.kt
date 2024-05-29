@@ -21,6 +21,7 @@ class MainViewModel: ViewModel() {
     private lateinit var context: Context
     lateinit var securePreferenceHelper: SecurePreferenceHelper
     private val BASE_URL = "https://kiwiprojectstudio.com/SpellDeal/"
+    private val ORACLE_URL = "https://api.scryfall.com/"
     var token = ""
     var userId = 0
     var notificaciones: MutableList<Boolean> = mutableListOf()
@@ -38,13 +39,27 @@ class MainViewModel: ViewModel() {
         val result = MutableLiveData<Response>()
         val queue: RequestQueue = Volley.newRequestQueue(context)
         val jsonObjectRequest = JsonObjectRequest(
-            com.android.volley.Request.Method.GET, BASE_URL + url, body,
+            com.android.volley.Request.Method.POST, BASE_URL + url, body,
             { response ->
                 if (response != null) {
                     val code = if(response.has("code")) response.getInt("code") else 599
                     val msg = if(response.has("msg")) response.getString("msg") else null
                     val body = if(response.has("body")) response.getJSONObject("body") else null
                     result.value = Response(code, msg, body)
+                }
+            },
+            { error -> error.message?.let { Log.d("ERROR", it) } })
+        queue.add(jsonObjectRequest)
+        return result
+    }
+    fun connexionOracle(url: String, body: JSONObject?): LiveData<JSONObject>{
+        val result = MutableLiveData<JSONObject>()
+        val queue: RequestQueue = Volley.newRequestQueue(context)
+        val jsonObjectRequest = JsonObjectRequest(
+            com.android.volley.Request.Method.GET, BASE_URL + url, body,
+            { response ->
+                if (response != null) {
+                    result.value = response
                 }
             },
             { error -> error.message?.let { Log.d("ERROR", it) } })
@@ -108,5 +123,10 @@ class MainViewModel: ViewModel() {
         val url = "createUbicacion.php?token=" + token
         val result = connexionKiwi(url, jsonBody)
         return result
+    }
+
+    fun getCard(id: String): LiveData<JSONObject> {
+        val url = "cards/"+id
+        return connexionOracle(url, null)
     }
 }
