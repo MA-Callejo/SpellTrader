@@ -1,4 +1,4 @@
-package com.kiwistudio.spelltrader.ui.catalogo
+package com.kiwistudio.spelltrader.ui.anuncios
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -11,14 +11,15 @@ import androidx.lifecycle.ViewModelProvider
 import com.kiwistudio.spelltrader.MainViewModel
 import com.kiwistudio.spelltrader.R
 import com.kiwistudio.spelltrader.entities.Anuncio
+import com.kiwistudio.spelltrader.entities.AnuncioFull
 
-class DialogMiAnuncio(val anuncio: Anuncio?): DialogFragment() {
+class DialogAnuncio(val anuncio: AnuncioFull): DialogFragment() {
     private lateinit var viewModel: MainViewModel
     private lateinit var nombre: EditText
     private lateinit var descripcion: EditText
     private lateinit var btnOk: Button
 
-    var onConfirmListener: (() -> Unit)? = null
+    var onReserveListener: (() -> Unit)? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -32,35 +33,7 @@ class DialogMiAnuncio(val anuncio: Anuncio?): DialogFragment() {
         viewModel = ViewModelProvider(requireActivity())[MainViewModel::class.java]
         btnOk = view.findViewById(R.id.btnOk)
         nombre = view.findViewById(R.id.nombreUbicacion)
-        btnOk.setOnClickListener {
-            enviar()
-        }
-        if(anuncio != null){
-            nombre.setText(anuncio.nombre)
-            descripcion.setText(anuncio.nombre)
-        }
-    }
-    private fun enviar(){
-        val ann = Anuncio(
-            nombre = nombre.text.toString(),
-            descripcion = nombre.text.toString(),
-            fkPropietario = 1
-        )
-        if(anuncio != null){
-            ann.id = anuncio.id
-            viewModel.updateAnuncios(ann).observeForever{
-                if(it != null){
-                    onConfirmListener?.invoke()
-                    dismiss()
-                }
-            }
-        }else{
-            viewModel.createAnuncio(ann).observeForever{
-                if(it != null){
-                    onConfirmListener?.invoke()
-                    dismiss()
-                }
-            }
-        }
+        nombre.setText(anuncio.nombre)
+        descripcion.setText(anuncio.nombre)
     }
 }

@@ -13,6 +13,7 @@ import com.android.volley.toolbox.Volley
 import com.kiwistudio.spelltrader.conexion.Repository
 import com.kiwistudio.spelltrader.conexion.Response
 import com.kiwistudio.spelltrader.entities.Anuncio
+import com.kiwistudio.spelltrader.entities.Filtros
 import com.kiwistudio.spelltrader.entities.Ubicacion
 import kotlinx.coroutines.launch
 import org.json.JSONObject
@@ -56,7 +57,7 @@ class MainViewModel: ViewModel() {
         val result = MutableLiveData<JSONObject>()
         val queue: RequestQueue = Volley.newRequestQueue(context)
         val jsonObjectRequest = JsonObjectRequest(
-            com.android.volley.Request.Method.GET, BASE_URL + url, body,
+            com.android.volley.Request.Method.GET, ORACLE_URL + url, body,
             { response ->
                 if (response != null) {
                     result.value = response
@@ -69,6 +70,16 @@ class MainViewModel: ViewModel() {
     fun getMisAnuncios(): LiveData<Response> {
         val url = "getMisAnuncios.php?token=" + token
         val result = connexionKiwi(url, null)
+        return result
+    }
+    fun getAnuncios(filtros: Filtros): LiveData<Response> {
+        val jsonBody = JSONObject().apply {
+            put("altitud", filtros.altitud)
+            put("latitud", filtros.latitud)
+            put("nombre", filtros.nombre)
+        }
+        val url = "getAnuncios.php?token=" + token
+        val result = connexionKiwi(url, jsonBody)
         return result
     }
     fun deleteAnuncios(id: Int): LiveData<Response>{

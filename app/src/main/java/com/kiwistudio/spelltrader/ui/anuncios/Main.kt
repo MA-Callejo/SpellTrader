@@ -1,9 +1,9 @@
-package com.kiwistudio.spelltrader.ui.catalogo
+package com.kiwistudio.spelltrader.ui.anuncios
 
-import android.app.AlertDialog
 import android.content.Context
 import android.content.res.ColorStateList
 import android.content.res.Resources
+import android.location.Location
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -18,17 +18,23 @@ import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.transition.Visibility
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.kiwistudio.spelltrader.MainViewModel
 import com.kiwistudio.spelltrader.R
-import com.kiwistudio.spelltrader.entities.Anuncio
+import com.kiwistudio.spelltrader.entities.AnuncioFull
+import com.kiwistudio.spelltrader.entities.Filtros
 import com.squareup.picasso.Picasso
 
-class Catalogo : Fragment() {
+class Main : Fragment() {
     private lateinit var viewModel: MainViewModel
     private var filtro = 0
     private lateinit var btnPacks: Button
     private lateinit var btnSingles: Button
+    private lateinit var searchBar: EditText
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private var latitud: Double = 0.0
+    private var longitud: Double = 0.0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -38,11 +44,15 @@ class Catalogo : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_catalogo, container, false)
+        return inflater.inflate(R.layout.fragment_main, container, false)
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProvider(requireActivity())[MainViewModel::class.java]
+        view.findViewById<ImageButton>(R.id.btnSearch).setOnClickListener{
+            val nombre = view.findViewById<EditText>(R.id.search).text
+            Toast.makeText(context, nombre, Toast.LENGTH_SHORT).show()
+        }
         btnSingles = view.findViewById(R.id.btnSingles)
         btnPacks = view.findViewById(R.id.btnPacks)
         btnSingles.setOnClickListener{
@@ -52,6 +62,21 @@ class Catalogo : Fragment() {
         btnPacks.setOnClickListener{
             filtro = if(filtro == 2) 0 else 2
             setFiltros()
+        }
+        searchBar = view.findViewById(R.id.search)
+        view.findViewById<ImageButton>(R.id.btnSearch).setOnClickListener{
+            recargar(view)
+        }
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
+        fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
+            location?.let {
+                latitud = it.latitude
+                longitud = it.longitude
+            } ?: run {
+                latitud = 0.0
+                longitud = 0.0
+            }
         }
         recargar(view)
     }
@@ -75,13 +100,14 @@ class Catalogo : Fragment() {
     private fun recargar(view: View){
         val recyclerView: RecyclerView = view.findViewById(R.id.recycler_view)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        viewModel.getMisAnuncios().observeForever { it ->
-            val datas: MutableList<Anuncio> = mutableListOf()
+        val filtros = Filtros(latitud, longitud, searchBar.text.toString(), 0)
+        viewModel.getAnuncios(filtros).observeForever { it ->
+            val datas: MutableList<AnuncioFull> = mutableListOf()
             val anunciosResponse = it.body?.getJSONArray("anuncios")
             if (anunciosResponse != null) {
                 for (i in 0 until anunciosResponse.length()) {
                     datas.add(
-                        Anuncio(
+                        AnuncioFull(
                             id = anunciosResponse.getJSONObject(i).getInt("id"),
                             nombre = anunciosResponse.getJSONObject(i).getString("nombre"),
                             fkPropietario = anunciosResponse.getJSONObject(i).getInt("fkPropietario"),
@@ -93,40 +119,30 @@ class Catalogo : Fragment() {
                             comision = anunciosResponse.getJSONObject(i).getDouble("comision"),
                             idioma = anunciosResponse.getJSONObject(i).getInt("idioma"),
                             foil = (anunciosResponse.getJSONObject(i).getInt("foil") == 1),
-                    ))
+                            userName = anunciosResponse.getJSONObject(i).getString("username"),
+                            userScore = anunciosResponse.getJSONObject(i).getDouble("score"),
+                            distance = anunciosResponse.getJSONObject(i).getDouble("distancia")
+                        )
+                    )
                 }
             }
             val adapter = AnuncioAdapter(datas, viewModel, resources,
                 onCardClick = { data ->
                     // Código a ejecutar cuando se pulse el CardView
-                    val dialog = DialogMiAnuncio(data)
+                    /*val dialog = DialogAnuncio(data)
                     dialog.onConfirmListener = {
                         recargar(view)
                     }
-                    dialog.show(parentFragmentManager, "EditAnuncioDialog")
+                    dialog.show(parentFragmentManager, "AnuncioDialog")*/
                 },
-                onDelete = { data ->
-                    val builder = AlertDialog.Builder(requireActivity())
-                    builder.setTitle("Confirmacion")
-                    builder.setMessage("¿Esta seguro de que desea eliminar este anuncio?")
-                    builder.setPositiveButton("Si") { _, _: Int ->
-                        viewModel.deleteUbicacion(data.id).observeForever { it ->
-                            if (it != null) {
-                                recargar(view)
-                            }
-                        }
-                    }
-                    builder.setNegativeButton("No") { dialogInterface, _: Int ->
-                        dialogInterface.dismiss()
-                    }
-                    builder.show()
+                onUserClick = { data ->
+                    // TODO
                 })
             recyclerView.adapter = adapter
         }
     }
     class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val title: TextView = itemView.findViewById(R.id.nombre)
-        val borrar: ImageButton = itemView.findViewById(R.id.btnBorrar)
         val descripcion: TextView = itemView.findViewById(R.id.descripcion)
         val precio: TextView = itemView.findViewById(R.id.precio)
         val edicion: TextView = itemView.findViewById(R.id.edicion)
@@ -134,16 +150,18 @@ class Catalogo : Fragment() {
         val idioma: ImageView = itemView.findViewById(R.id.idioma)
         val graded: ImageView = itemView.findViewById(R.id.graded)
         val foil: ImageView = itemView.findViewById(R.id.foil)
+        val distance: TextView = itemView.findViewById(R.id.distance)
+        val user: TextView = itemView.findViewById(R.id.user)
         val context: Context
             get() = itemView.context
     }
-    class AnuncioAdapter(private val dataList: List<Anuncio>,
-                           private val viewModel: MainViewModel,
-                           private var resources: Resources,
-                           private val onCardClick: (Anuncio) -> Unit,
-                           private val onDelete: (Anuncio) -> Unit) : RecyclerView.Adapter<MyViewHolder>() {
+    class AnuncioAdapter(private val dataList: List<AnuncioFull>,
+                         private val viewModel: MainViewModel,
+                         private var resources: Resources,
+                         private val onCardClick: (AnuncioFull) -> Unit,
+                         private val onUserClick: (Int) -> Unit) : RecyclerView.Adapter<MyViewHolder>() {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
-            val itemView = LayoutInflater.from(parent.context).inflate(R.layout.anuncio_editar, parent, false)
+            val itemView = LayoutInflater.from(parent.context).inflate(R.layout.anuncio_ver, parent, false)
             return MyViewHolder(itemView)
         }
         override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
@@ -191,12 +209,18 @@ class Catalogo : Fragment() {
                     else -> R.drawable.ingles
                 }
             )
+            holder.distance.text = "${data.distance}Km"
+            holder.user.text = data.userName
+            holder.user.setTextColor(if(data.userScore >= 4) R.color.nearMint else if (data.userScore >= 2.5) R.color.good else R.color.poor)
+            holder.user.setOnClickListener{
+                // navegar al perfil
+            }
             holder.foil.visibility = if(data.foil) View.VISIBLE else View.GONE
             holder.itemView.setOnClickListener {
                 onCardClick(data)
             }
-            holder.borrar.setOnClickListener{
-                onDelete(data)
+            holder.user.setOnClickListener{
+                onUserClick(data.fkPropietario)
             }
         }
         override fun getItemCount(): Int {

@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/main2"
+        android:id="@+id/anunciosMain"
         android:icon="@android:drawable/btn_star"
         android:title="Inicio"/>
     <item
