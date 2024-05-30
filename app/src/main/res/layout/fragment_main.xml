@@ -41,8 +41,7 @@
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     android:background="@android:color/transparent"
-                    android:src="@android:drawable/divider_horizontal_dim_dark"
-                    tools:src="@android:drawable/ic_menu_sort_by_size" />
+                    android:src="@android:drawable/ic_menu_sort_by_size" />
 
             </LinearLayout>
         </androidx.cardview.widget.CardView>

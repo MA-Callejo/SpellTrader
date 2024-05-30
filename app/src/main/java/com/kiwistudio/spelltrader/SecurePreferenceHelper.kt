@@ -6,18 +6,8 @@ import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
 
 class SecurePreferenceHelper(context: Context) {
-    private val sharedPreferences: SharedPreferences
-
-    init {
-        val masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
-        sharedPreferences = EncryptedSharedPreferences.create(
-            "secure_user_prefs",
-            masterKeyAlias,
-            context,
-            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-        )
-    }
+    private val sharedPreferences: SharedPreferences =
+        context.getSharedPreferences("my_preferences", Context.MODE_PRIVATE)
 
     companion object {
         private const val KEY_USERNAME = "username"

@@ -1,6 +1,8 @@
 package com.kiwistudio.spelltrader.ui.anuncios
 
+import android.Manifest
 import android.content.Context
+import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.content.res.Resources
 import android.location.Location
@@ -15,6 +17,7 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -69,6 +72,16 @@ class Main : Fragment() {
         }
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
+        if (ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            return
+        }
         fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
             location?.let {
                 latitud = it.latitude
@@ -129,11 +142,8 @@ class Main : Fragment() {
             val adapter = AnuncioAdapter(datas, viewModel, resources,
                 onCardClick = { data ->
                     // Código a ejecutar cuando se pulse el CardView
-                    /*val dialog = DialogAnuncio(data)
-                    dialog.onConfirmListener = {
-                        recargar(view)
-                    }
-                    dialog.show(parentFragmentManager, "AnuncioDialog")*/
+                    val dialog = DialogAnuncio(data)
+                    dialog.show(parentFragmentManager, "AnuncioDialog")
                 },
                 onUserClick = { data ->
                     // TODO
@@ -211,10 +221,7 @@ class Main : Fragment() {
             )
             holder.distance.text = "${data.distance}Km"
             holder.user.text = data.userName
-            holder.user.setTextColor(if(data.userScore >= 4) R.color.nearMint else if (data.userScore >= 2.5) R.color.good else R.color.poor)
-            holder.user.setOnClickListener{
-                // navegar al perfil
-            }
+            holder.user.setTextColor(resources.getColor(if(data.userScore >= 4) R.color.nearMint else if (data.userScore >= 2.5) R.color.good else R.color.poor))
             holder.foil.visibility = if(data.foil) View.VISIBLE else View.GONE
             holder.itemView.setOnClickListener {
                 onCardClick(data)

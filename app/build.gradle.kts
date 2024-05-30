@@ -59,5 +59,5 @@ dependencies {
     implementation (libs.kotlinx.coroutines.core)
     implementation (libs.kotlinx.coroutines.android)
     implementation(libs.osmdroid.android)
-    implementation("com.squareup.picasso:picasso:2.71828")
+    implementation(libs.picasso)
 }
