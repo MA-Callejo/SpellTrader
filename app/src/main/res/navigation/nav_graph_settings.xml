@@ -35,7 +35,11 @@
         android:id="@+id/historial2"
         android:name="com.kiwistudio.spelltrader.ui.settings.Historial"
         android:label="fragment_historial"
-        tools:layout="@layout/fragment_historial" />
+        tools:layout="@layout/fragment_historial" >
+        <action
+            android:id="@+id/action_historial2_to_perfiles"
+            app:destination="@id/perfiles" />
+    </fragment>
     <fragment
         android:id="@+id/importar2"
         android:name="com.kiwistudio.spelltrader.ui.settings.Importar"
@@ -45,10 +49,22 @@
         android:id="@+id/perfil2"
         android:name="com.kiwistudio.spelltrader.ui.settings.Perfil"
         android:label="fragment_perfil"
-        tools:layout="@layout/fragment_perfil" />
+        tools:layout="@layout/fragment_perfil" >
+        <action
+            android:id="@+id/action_perfil2_to_perfiles"
+            app:destination="@id/perfiles" />
+        <action
+            android:id="@+id/action_perfil2_to_ubicaciones2"
+            app:destination="@id/ubicaciones2" />
+    </fragment>
     <fragment
         android:id="@+id/ubicaciones2"
         android:name="com.kiwistudio.spelltrader.ui.settings.Ubicaciones"
         android:label="fragment_ubicaciones"
         tools:layout="@layout/fragment_ubicaciones" />
+    <fragment
+        android:id="@+id/perfiles"
+        android:name="com.kiwistudio.spelltrader.ui.anuncios.PerfilViwe"
+        android:label="fragment_perfiles"
+        tools:layout="@layout/fragment_perfil_viwe" />
 </navigation>

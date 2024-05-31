@@ -4,5 +4,6 @@ data class Filtros(
     var altitud: Double,
     var latitud: Double,
     var nombre: String = "",
-    var tipo: Int = 0
+    var tipo: Int = 0,
+    var user: Int? = null
     )

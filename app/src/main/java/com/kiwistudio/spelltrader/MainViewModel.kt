@@ -12,20 +12,31 @@ import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
 import com.kiwistudio.spelltrader.conexion.Repository
 import com.kiwistudio.spelltrader.conexion.Response
+import com.kiwistudio.spelltrader.db.DataBase
+import com.kiwistudio.spelltrader.db.Mensaje
+import com.kiwistudio.spelltrader.db.MensajeDao
 import com.kiwistudio.spelltrader.entities.Anuncio
 import com.kiwistudio.spelltrader.entities.Filtros
 import com.kiwistudio.spelltrader.entities.Ubicacion
+import com.kiwistudio.spelltrader.entities.UserDetail
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 
 class MainViewModel: ViewModel() {
     private lateinit var context: Context
     lateinit var securePreferenceHelper: SecurePreferenceHelper
+    private lateinit var database: DataBase
+    private lateinit var messageDao: MensajeDao
     private val BASE_URL = "https://kiwiprojectstudio.com/SpellDeal/"
     private val ORACLE_URL = "https://api.scryfall.com/"
     var token = ""
     var userId = 0
     var notificaciones: MutableList<Boolean> = mutableListOf()
+    var userVer: UserDetail? = null
+    var userIdView = 0
+    var filtroUSer: Int? = null
+    var filtroUserName = ""
+    var pedidoID: Int = 0
 
     fun init(context: Context) {
         Log.d("CONTEXT", "Iniciado")
@@ -35,10 +46,19 @@ class MainViewModel: ViewModel() {
         userId = credentials.first
         token = credentials.second.toString()
         notificaciones = securePreferenceHelper.getNotificaciones()
+        database = DataBase.getDatabase(context)
+        messageDao = database.messageDao()
+    }
+    suspend fun getMensajes(): List<Mensaje> {
+        return messageDao.getAllMessages(pedidoID)
+    }
+    suspend fun insetMessage(mensaje: Mensaje): Long {
+        return messageDao.insertMessage(mensaje)
     }
     fun connexionKiwi(url: String, body: JSONObject?): LiveData<Response>{
         val result = MutableLiveData<Response>()
         val queue: RequestQueue = Volley.newRequestQueue(context)
+        Log.d("SENDING", "$url: ${body.toString()}")
         val jsonObjectRequest = JsonObjectRequest(
             com.android.volley.Request.Method.POST, BASE_URL + url, body,
             { response ->
@@ -72,14 +92,55 @@ class MainViewModel: ViewModel() {
         val result = connexionKiwi(url, null)
         return result
     }
+    fun getMensajesServer(pedido: Int): LiveData<Response> {
+        val url = "readMsg.php?token=" + token+"&pedido="+pedido
+        val result = connexionKiwi(url, null)
+        return result
+    }
+    fun getUser(): LiveData<Response> {
+        val url = "getUser.php?token=" + token+"&id="+userIdView
+        val result = connexionKiwi(url, null)
+        return result
+    }
+    fun sendMensaje(mensaje: Mensaje): LiveData<Response> {
+        val jsonBody = JSONObject().apply {
+            put("cuerpo", mensaje.message)
+            put("pedido", mensaje.pedido)
+            put("time", mensaje.timestamp)
+        }
+        val url = "sendMsg.php?token=" + token
+        val result = connexionKiwi(url, jsonBody)
+        return result
+    }
+    fun getUserMe(): LiveData<Response> {
+        val url = "getUser.php?token=" + token+"&id="+userId
+        val result = connexionKiwi(url, null)
+        return result
+    }
+    fun reservar(anuncio: Int, valor: Double): LiveData<Response> {
+        val url = "reservar.php?token=" + token+"&anuncio="+anuncio+"&valor="+valor
+        val result = connexionKiwi(url, null)
+        return result
+    }
+    fun getHistorico(): LiveData<Response> {
+        val url = "getHistorico.php?token=" + token
+        val result = connexionKiwi(url, null)
+        return result
+    }
     fun getAnuncios(filtros: Filtros): LiveData<Response> {
         val jsonBody = JSONObject().apply {
             put("altitud", filtros.altitud)
             put("latitud", filtros.latitud)
             put("nombre", filtros.nombre)
+            put("user", filtros.user)
         }
         val url = "getAnuncios.php?token=" + token
         val result = connexionKiwi(url, jsonBody)
+        return result
+    }
+    fun getPendientes(): LiveData<Response> {
+        val url = "getPendientes.php?token=" + token
+        val result = connexionKiwi(url, null)
         return result
     }
     fun deleteAnuncios(id: Int): LiveData<Response>{

@@ -19,6 +19,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -38,6 +39,8 @@ class Main : Fragment() {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private var latitud: Double = 0.0
     private var longitud: Double = 0.0
+    private var filtroUser: Int? = null
+    private var filtroUserName: String = ""
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -52,6 +55,11 @@ class Main : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProvider(requireActivity())[MainViewModel::class.java]
+        if(viewModel.filtroUSer != null){
+            filtroUser = viewModel.filtroUSer
+            filtroUserName = viewModel.filtroUserName
+            viewModel.filtroUSer = null
+        }
         view.findViewById<ImageButton>(R.id.btnSearch).setOnClickListener{
             val nombre = view.findViewById<EditText>(R.id.search).text
             Toast.makeText(context, nombre, Toast.LENGTH_SHORT).show()
@@ -113,7 +121,7 @@ class Main : Fragment() {
     private fun recargar(view: View){
         val recyclerView: RecyclerView = view.findViewById(R.id.recycler_view)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        val filtros = Filtros(latitud, longitud, searchBar.text.toString(), 0)
+        val filtros = Filtros(latitud, longitud, searchBar.text.toString(), 0, filtroUser)
         viewModel.getAnuncios(filtros).observeForever { it ->
             val datas: MutableList<AnuncioFull> = mutableListOf()
             val anunciosResponse = it.body?.getJSONArray("anuncios")
@@ -143,10 +151,20 @@ class Main : Fragment() {
                 onCardClick = { data ->
                     // Código a ejecutar cuando se pulse el CardView
                     val dialog = DialogAnuncio(data)
+                    dialog.onUser = {
+                        viewModel.userIdView = data.fkPropietario
+                        findNavController().navigate(R.id.action_main2_to_perfilViwe)
+                    }
+                    dialog.onReserve = {
+                        viewModel.reservar(data.id, it).observeForever{
+                            Toast.makeText(context, "Añadido a las reservas", Toast.LENGTH_SHORT).show()
+                        }
+                    }
                     dialog.show(parentFragmentManager, "AnuncioDialog")
                 },
                 onUserClick = { data ->
-                    // TODO
+                    viewModel.userIdView = data
+                    findNavController().navigate(R.id.action_main2_to_perfilViwe)
                 })
             recyclerView.adapter = adapter
         }

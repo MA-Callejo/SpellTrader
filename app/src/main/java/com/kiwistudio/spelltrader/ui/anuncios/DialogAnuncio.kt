@@ -20,8 +20,9 @@ import com.squareup.picasso.Picasso
 class DialogAnuncio(val anuncio: AnuncioFull): DialogFragment() {
     private lateinit var viewModel: MainViewModel
     private lateinit var nombre: TextView
+    var precio = 0.0
 
-    var onReserve: (() -> Unit)? = null
+    var onReserve: ((valor: Double) -> Unit)? = null
     var onUser: (() -> Unit)? = null
 
     override fun onCreateView(
@@ -42,13 +43,13 @@ class DialogAnuncio(val anuncio: AnuncioFull): DialogFragment() {
         val foil: ImageView = view.findViewById(R.id.foil)
         val distance: TextView = view.findViewById(R.id.distance)
         val user: TextView = view.findViewById(R.id.user)
+        val reserva: TextView = view.findViewById(R.id.reserva)
 
 
         nombre.setText(anuncio.nombre)
         viewModel.getCard(anuncio.carta).observeForever{
             nombre.setText(it.getString("name"))
             edicion.text = it.getString("set_name")
-            val precio: Double
             if(anuncio.modoPrecio == 1){
                 precio = anuncio.precio
             }else {
@@ -92,7 +93,11 @@ class DialogAnuncio(val anuncio: AnuncioFull): DialogFragment() {
         user.text = anuncio.userName
         user.setTextColor(resources.getColor(if(anuncio.userScore >= 4) R.color.nearMint else if (anuncio.userScore >= 2.5) R.color.good else R.color.poor))
         user.setOnClickListener{
-            onUser?.let { it1 -> it1() }
+            onUser?.invoke()
+            dismiss()
+        }
+        reserva.setOnClickListener {
+            onReserve?.invoke(precio)
         }
         foil.visibility = if(anuncio.foil) View.VISIBLE else View.GONE
     }

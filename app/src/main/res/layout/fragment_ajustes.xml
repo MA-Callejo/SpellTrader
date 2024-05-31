@@ -142,14 +142,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"/>
-    <Button
-        android:id="@+id/logout"
-        android:backgroundTint="@android:color/holo_red_light"
-        android:layout_margin="30dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@color/black"
-        android:text="LogOut"/>
 
 
 </LinearLayout>

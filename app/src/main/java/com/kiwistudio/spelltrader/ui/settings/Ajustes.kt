@@ -48,11 +48,5 @@ class Ajustes : Fragment() {
         view.findViewById<CardView>(R.id.historial).setOnClickListener{
             findNavController().navigate(R.id.action_ajustes2_to_historial2)
         }
-        view.findViewById<Button>(R.id.logout).setOnClickListener{
-            viewModel.securePreferenceHelper.clearUserCredentials()
-            val intent = Intent(requireContext(), Autentificacion::class.java)
-            startActivity(intent)
-            activity?.finish()
-        }
     }
 }
